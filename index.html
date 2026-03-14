@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unique Room - Auditoria WooCommerce</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .header p { font-size: 1.2rem; opacity: 0.9; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 { color: #2c3e50; margin-bottom: 10px; }
+        .stat-number { font-size: 2rem; font-weight: bold; color: #e74c3c; }
+        .stat-label { color: #666; margin-top: 5px; }
+        
+        .section {
+            background: white;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section-header {
+            background: #34495e;
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-header h2 { font-size: 1.5rem; }
+        .badge { 
+            background: #e74c3c; 
+            padding: 5px 15px; 
+            border-radius: 20px; 
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .section-content { padding: 20px; }
+        
+        .problem-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .problem-table th {
+            background: #ecf0f1;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #bdc3c7;
+        }
+        
+        .problem-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .problem-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .product-link {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .product-link:hover { text-decoration: underline; }
+        
+        .sku-code {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .status-draft { color: #f39c12; font-weight: bold; }
+        .no-data { color: #e74c3c; font-style: italic; }
+        
+        .filter-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        .filter-tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .filter-tab.active {
+            color: #2c3e50;
+            border-bottom-color: #3498db;
+            font-weight: bold;
+        }
+        
+        .filter-content { display: none; }
+        .filter-content.active { display: block; }
+        
+        .summary-box {
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-box h3 { color: #2c3e50; margin-bottom: 10px; }
+        
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .problem-table { font-size: 0.9rem; }
+            .problem-table th, .problem-table td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Auditoria WooCommerce</h1>
+            <p>Unique Room - Análise Completa de Produtos</p>
+            <p>Gerado em: 13/03/2026 às 21:57:23</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total de Produtos</h3>
+                <div class="stat-number">1,256</div>
+                <div class="stat-label">Analisados</div>
+            </div>
+            <div class="stat-card">
+                <h3>Sem SKU</h3>
+                <div class="stat-number">50</div>
+                <div class="stat-label">Problemas</div>
+            </div>
+            <div class="stat-card">
+                <h3>SKUs Duplicados</h3>
+                <div class="stat-number">27</div>
+                <div class="stat-label">Conflitos</div>
+            </div>
+            <div class="stat-card">
+                <h3>Sem Preço</h3>
+                <div class="stat-number">127</div>
+                <div class="stat-label">Produtos</div>
+            </div>
+        </div>
+        
+        <div class="summary-box">
+            <h3>📊 Resumo Executivo</h3>
+            <p>Esta auditoria identificou <strong>223 problemas críticos</strong> 
+            que precisam ser resolvidos antes do sync com os 16.622 SKUs do database completo.</p>
+        </div>
+        <div class="section">
+            <div class="section-header">
+                <h2>🚨 SKUs Duplicados</h2>
+                <span class="badge">27 conflitos</span>
+            </div>
+            <div class="section-content">
+                <p>SKUs duplicados causam conflitos no inventário e problemas de sincronização.</p>
+                <table class="problem-table">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Quantidade</th>
+                            <th>Produtos Afetados</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="sku-code">RF-FD-653-XX-2VSA</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/?post_type=product&p=54036" class="product-link" target="_blank">Refrigerador French Door 653 Litros 220V Elettrome</a><br><a href="https://www.uniqueroom.com.br/produto/refrigerador-french-door-653-litros-220v-elettromec-2/" class="product-link" target="_blank">Refrigerador French Door 653 Litros 220V Elettrome</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">15813</span></td>
+                            <td>3</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/premium-700-sr/" class="product-link" target="_blank">Premium 700 SR</a><br><a href="https://www.uniqueroom.com.br/produto/evolution-plus-750-sr/" class="product-link" target="_blank">Evolution Plus 750 SR</a><br><a href="https://www.uniqueroom.com.br/produto/triturador-de-alimentos-turbo-elite-franke-075h/" class="product-link" target="_blank">Triturador de Alimentos Turbo Elite Franke 0,75H</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">TG14EXAV2</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/gaveta-aquecida-bertazzoni-wd60x/" class="product-link" target="_blank">GAVETA AQUECIDA BERTAZZONI WD60X</a><br><a href="https://www.uniqueroom.com.br/produto/gaveta-aquecida-vintage-tecno/" class="product-link" target="_blank">Gaveta Aquecida Vintage Tecno</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">50,000,800,004</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/churrasqueira-scheer-i9-rc850-cooktop-785-inox-304-590cm/" class="product-link" target="_blank">Churrasqueira Scheer I9 RC850 Cooktop 785 Inox 304</a><br><a href="https://www.uniqueroom.com.br/produto/churrasqueira-scheer-parrilla-cooktop-585-41cm/" class="product-link" target="_blank">Churrasqueira Scheer Parrilla Cooktop 585 (41cm)</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">SBBF00101010101</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/?post_type=product&p=40323" class="product-link" target="_blank">Banheira de Imersão Angra Sabbia Fosca Branca com </a><br><a href="https://www.uniqueroom.com.br/produto/banheira-de-imersao-angra-sabbia-fosca-branca-com-valvula-click-cromada/" class="product-link" target="_blank">Banheira de Imersão Angra Sabbia Fosca Branca com </a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">TH90FTX5</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cooktop-a-gas-inox-escovado-90cm-5-queimadores-220v-original-tecno/" class="product-link" target="_blank">Cooktop a Gás Inox Escovado 90cm 5 queimadores, 22</a><br><a href="https://www.uniqueroom.com.br/produto/cooktop-a-gas-filotop-tecno-professional-th90-ftx-p/" class="product-link" target="_blank">COOKTOP A GÁS FILOTOP TECNO PROFESSIONAL TH90 FTX </a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">969866</span></td>
+                            <td>3</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/bacia-com-caixa-acoplada-docol-stillo-3/" class="product-link" target="_blank">Bacia Com Caixa Acoplada Docol Stillo</a><br><a href="https://www.uniqueroom.com.br/produto/bacia-com-caixa-acoplada-docol-stillo-4/" class="product-link" target="_blank">Bacia Com Caixa Acoplada Docol Stillo</a><br><a href="https://www.uniqueroom.com.br/produto/bacia-com-caixa-acoplada-docol-stillo-2/" class="product-link" target="_blank">Bacia Com Caixa Acoplada Docol Stillo</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">SCCD0030404</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-paprica-90-cinza-urbano-sabbia-2/" class="product-link" target="_blank">Cuba Páprica 90 Cinza Urbano Sabbia</a><br><a href="https://www.uniqueroom.com.br/produto/cuba-paprica-90-cinza-urbano-sabbia/" class="product-link" target="_blank">Cuba Páprica 90 Cinza Urbano Sabbia</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">CKG-5Q-70-VT-3TNB</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cooktop-vetro-elettromec-70-cm-2/" class="product-link" target="_blank">Cooktop Vetro Elettromec 70 cm</a><br><a href="https://www.uniqueroom.com.br/produto/cooktop-vetro-elettromec-70-cm/" class="product-link" target="_blank">Cooktop Vetro 5 Queimadores Elettromec 70 cm</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">EVLCHVER</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/chapa-de-ferro-gusa-evol-para-churrasqueiras-verona-amalfi-45-x-30cms-evlchflo-2/" class="product-link" target="_blank">CHAPA DE FERRO GUSA EVOL PARA CHURRASQUEIRAS VERON</a><br><a href="https://www.uniqueroom.com.br/produto/chapa-de-ferro-gusa-evol-para-churrasqueiras-verona-amalfi-45-x-30cms-evlchflo/" class="product-link" target="_blank">CHAPA DE FERRO GUSA EVOL PARA CHURRASQUEIRAS VERON</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">16702</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/coifa-de-ilha-linea-touch-franke-90cm/" class="product-link" target="_blank">Coifa de Ilha Linea Touch Franke 90cm</a><br><a href="https://www.uniqueroom.com.br/produto/coifa-de-ilha-de-linea-touch-franke-90cm-127v/" class="product-link" target="_blank">Coifa de Ilha Linea Touch Franke 90cm</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">17092</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/forno-eletrico-de-embutir-71l-franke-smart-fsm-86-220v/" class="product-link" target="_blank">Forno Elétrico de Embutir 71l Franke Smart Fsm 86 </a><br><a href="https://www.uniqueroom.com.br/produto/forno-eletrico-de-embutir-71l-franke-smart-fsm-86-220v-17092/" class="product-link" target="_blank">Forno Elétrico de Embutir 71l Franke Smart Fsm 86 </a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">TR43AVDC</span></td>
+                            <td>3</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/adega-climatizada-141-garrafas-3-zonas-professional-inox-abertura-para-direita-tecno/" class="product-link" target="_blank">Adega Professional 151 Garrafas Dual Zone 220V Tec</a><br><a href="https://www.uniqueroom.com.br/produto/adega-climatizada-141-garrafas-3-zonas-professional-inox-abertura-para-esquerda-tecno/" class="product-link" target="_blank">Adega Climatizada 141 Garrafas 3 Zonas Professiona</a><br><a href="https://www.uniqueroom.com.br/produto/adega-climatizada-ate-163-garrafas-2-zonas-professional-inox-abertura-para-direta-tr43avdc/" class="product-link" target="_blank">Adega Climatizada 151 Garrafas 2 Zonas Professiona</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">TR43CVDBV2</span></td>
+                            <td>3</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cervejeira-tecno-vintage-beer-master-433-litros-de-embutir-inox-abertura-para-direita-tr43cvdav2-2/" class="product-link" target="_blank">Cervejeira tecno vintage beer master 433 litros de</a><br><a href="https://www.uniqueroom.com.br/produto/wine-center-smart-evol-com-abertura-para-esquerda/" class="product-link" target="_blank">Adega Wine Center Smart Evol Com Abertura Para Esq</a><br><a href="https://www.uniqueroom.com.br/produto/cervejeira-tecno-vintage-beer-master-433-litros-de-embutir-inox-abertura-para-esquerda-tr43cvdav2-vintage/" class="product-link" target="_blank">Cervejeira tecno vintage beer master 433 litros de</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">GA-6S-14-XX-2TNA*</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/gaveta-aquecida-inox-14-cm-elettromec-2/" class="product-link" target="_blank">Gaveta Aquecida Inox 14 cm Elettromec</a><br><a href="https://www.uniqueroom.com.br/produto/gaveta-aquecida-inox-14-cm-elettromec/" class="product-link" target="_blank">Gaveta Aquecida Inox 14 cm Elettromec</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">TCI12</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/coifa-ilha-120-cm-inox-220v-bertazzoni/" class="product-link" target="_blank">Coifa Ilha, 120 cm, Inox 220V Bertazzoni</a><br><a href="https://www.uniqueroom.com.br/produto/coifa-ilha-120-cm-inox-220v-original-tecno/" class="product-link" target="_blank">Coifa Ilha, 120 cm, Inox 220V Original Tecno</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">TR43CVDAV2</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cervejeira-tecno-professional-beer-master-433-litros-de-embutir-inox-abertura-para-direita-tr43-cvda/" class="product-link" target="_blank">Cervejeira tecno professional beer master 433 litr</a><br><a href="https://www.uniqueroom.com.br/produto/cervejeira-tecno-vintage-beer-master-433-litros-de-embutir-inox-abertura-para-direita-tr43cvdav2/" class="product-link" target="_blank">Cervejeira tecno vintage beer master 433 litros de</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">PROF366QBXT</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cooktop-90cm-5-queimadores-dual-flame-lateral-bertazzoni/" class="product-link" target="_blank">Cooktop 90cm, 5 queimadores Dual Flame Lateral Ber</a><br><a href="https://www.uniqueroom.com.br/produto/cooktop-prof366-6-queimadores-a-gas-bertazzoni/" class="product-link" target="_blank">Cooktop PROF366 6 Queimadores A Gás Bertazzoni</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">TD14EXDP</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/lava-loucas-14-servicos-bertazzoni/" class="product-link" target="_blank">Lava-louças, 14 Serviços, Bertazzoni</a><br><a href="https://www.uniqueroom.com.br/produto/lava-loucas-de-embutir-14-servicos-220v-professional-tecno/" class="product-link" target="_blank">Lava Louças de Embutir 14 Serviços 220V, Professio</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">TG14EXAA</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/gaveta-aquecida-76cm-inox-30-kg-capacidade-temperatura-de-30-a-85-graus-bertazzoni/" class="product-link" target="_blank">Gaveta aquecida, 76cm, Inox, 30 kg capacidade, tem</a><br><a href="https://www.uniqueroom.com.br/produto/gaveta-aquecida-analogica-220v-original-tecno/" class="product-link" target="_blank">Gaveta aquecida Analógica, 220V, Original Tecno</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">TK38EXDB</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/forno-eletrico-combinado-com-micro-ondas-speed-oven-76cm-inox-38-litros-bertazzoni/" class="product-link" target="_blank">Forno Elétrico combinado com Micro-ondas, Speed Ov</a><br><a href="https://www.uniqueroom.com.br/produto/forno-combinado-micro-ondas-conveccao-de-embutir-38-litros-com-grill-220v-original-tecno/" class="product-link" target="_blank">Forno combinado micro-ondas + convecção de embutir</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">RSD96MFTE/Ci</span></td>
+                            <td>3</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/fogao-master-70cm-forno-eletrico-ventilado-com-churrasqueira-bertazzoni/" class="product-link" target="_blank">Fogão Master 70cm Forno Elétrico Ventilado Com Chu</a><br><a href="https://www.uniqueroom.com.br/produto/fogao-master-forno-a-gas-ventilado-com-churrasqueira-bertazzoni/" class="product-link" target="_blank">Fogão Master 60cm Forno A Gás Ventilado Com Churra</a><br><a href="https://www.uniqueroom.com.br/produto/fogao-a-gas-dolce-vita-preto-acetinado-chama-central-90cm-2-fornos-lofra/" class="product-link" target="_blank">Fogão A Gás Dolce Vita  Preto Acetinado Chama Cent</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">CQ40</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-de-apoio-quadrada-marmore-bege-bahia-2/" class="product-link" target="_blank">Cuba de Apoio Quadrada - Mármore Bege Bahia</a><br><a href="https://www.uniqueroom.com.br/produto/cuba-de-apoio-quadrada-marmore-branco-carrarinha/" class="product-link" target="_blank">Cuba de Apoio Quadrada - Mármore Branco Carrarinha</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">SC2F006010102</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-arco-70-sobrepor-branco-sabbia/" class="product-link" target="_blank">Cuba Arco 70 Sobrepor Branco Sabbia</a><br><a href="https://www.uniqueroom.com.br/produto/cuba-arco-60-sobrepor-branco-sabbia/" class="product-link" target="_blank">Cuba Arco 60 Sobrepor Branco Sabbia</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">20.04.30020</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/misturador-300-monocomando-debacco-2/" class="product-link" target="_blank">Misturador 300 Monocomando DeBacco Para Cozinha</a><br><a href="https://www.uniqueroom.com.br/produto/misturador-300-monocomando-debacco/" class="product-link" target="_blank">Misturador 300 Monocomando Gray DeBacco Para Cozin</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">RB8854[4285]</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/misturador-monocomando-para-cozinha-rubinetto/" class="product-link" target="_blank">Misturador Monocomando para Cozinha Rubinettos</a><br><a href="https://www.uniqueroom.com.br/produto/misturador-monocomando-para-lavatorio-ou-cozinha-rubinettos/" class="product-link" target="_blank">Misturador Monocomando para lavatório ou cozinha R</a><br></td></tr>
+                        <tr>
+                            <td><span class="sku-code">4093840008</span></td>
+                            <td>2</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/maquina-de-gelo-38cm-220v-cuisinart-arkton-4093840008/" class="product-link" target="_blank">Máquina De Gelo 38cm 220v Cuisinart Arkton 4093840</a><br><a href="https://www.uniqueroom.com.br/produto/maquina-de-gelo-38cm-220v-cuisinart-arkton-4093840008-2/" class="product-link" target="_blank">MÁQUINA DE GELO 38CM 220V CUISINART ARKTON  409384</a><br></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-header">
+                <h2>⚠️ Produtos Sem SKU</h2>
+                <span class="badge">50 produtos</span>
+            </div>
+            <div class="section-content">
+                <p>Produtos sem SKU não podem ser sincronizados com o database principal.</p>
+                <table class="problem-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome do Produto</th>
+                            <th>Status</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>39555</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/churrasqueira-premium-a-gas-cuisinart-arkton-3q-bb-65cm-iv/" class="product-link" target="_blank">Churrasqueira Premium a Gás Cuisinart Arkton 3Q BB 65CM IV</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>23956</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/conjunto-adega-cervejeira-tecno-professional-beer-master-433-litros-de-embutir-inox-abertura-para-direita-tr43cvdav2/" class="product-link" target="_blank">Conjunto Adega Cervejeira tecno Professional beer master 433 litros de embutir inox - abertura para direita – TR43CVDAV2</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14205</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-de-semi-apoio-quadrada-marmore-bege-bahia/" class="product-link" target="_blank">Cuba de Semi Apoio Quadrada - Mármore Bege Bahia</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14201</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-de-semi-apoio-quadrada-marmore-bianco-classico/" class="product-link" target="_blank">Cuba de Semi Apoio Quadrada - Mármore Bianco Clássico</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14169</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-de-semi-encaixe-oitavada-marmore-bianco-classico/" class="product-link" target="_blank">Cuba de Semi Encaixe Oitavada - Mármore Bianco Clássico</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14089</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-de-semi-encaixe-oitavada-marmore-branco-carrarinha/" class="product-link" target="_blank">Cuba de Semi Encaixe Oitavada - Mármore Branco Carrarinha</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>13241</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-pianette-trio-mekal/" class="product-link" target="_blank">Cuba Pianette Trio Mekal</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14257</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/difusor-aromatizador-de-ambientes-modelo-square-marmore-branco-moura-exotico/" class="product-link" target="_blank">Difusor / Aromatizador de Ambientes - Modelo Square - Mármore Branco Moura Exótico</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>7166</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/monocomando-para-cozinha-docol-pronto-127v-01064306-2/" class="product-link" target="_blank">Monocomando para cozinha Docol Pronto 127v 01064306</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14276</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/porta-sabonete-slim-marmore-bianco-classico/" class="product-link" target="_blank">Porta Sabonete Slim Mármore Bianco Clássico</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14273</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/porta-sabonete-slim-marmore-branco-carrarinha/" class="product-link" target="_blank">Porta Sabonete Slim Mármore Branco Carrarinha</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14270</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/porta-sabonete-slim-marmore-bege-bahia/" class="product-link" target="_blank">Porta Sabonete Slim Mármore Bege Bahia</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14313</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/porta-sabonete-square-marmore-branco-carrarinha/" class="product-link" target="_blank">Porta Sabonete Square Mármore Branco Carrarinha</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14277</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/porta-sabonete-slim-marmore-branco-moura-exotico/" class="product-link" target="_blank">Porta Sabonete Slim Mármore Branco Moura Exótico</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>13268</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/tanque-duplo-standard-1300-mekal/" class="product-link" target="_blank">Tanque Duplo Standard 1300 Mekal</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>23624</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/conjunto-adega-45-garrafas-debacco-e-cervejeira-beer-center-85-litros-undercounter-de-embutir-2/" class="product-link" target="_blank">Conjunto Adega 45 Garrafas Debacco e Cervejeira Beer Center 85 Litros Undercounter de Embutir</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>18641</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/churrasqueira-scheer-605-lift-grill-personalizado-1170mm/" class="product-link" target="_blank">Churrasqueira Scheer 605 Lift Grill Personalizado 1170mm</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>17416</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/fogao-professional-895cm-6-queimadores-bertazzoni/" class="product-link" target="_blank">Fogão PROFESSIONAL, 89,5cm, 6 queimadores Bertazzoni</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>16950</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/fogao-master-122cm-forno-a-gas-ventilado-com-grill-de-mesa-e-churrasqueira-bertazzoni/" class="product-link" target="_blank">Fogão Master 122cm Forno A Gás Ventilado Com Grill De Mesa, E Churrasqueira Bertazzoni</a></td>
+                            <td class="status-private">private</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>16841</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/coifa-de-parede-mini-om-white-elica/" class="product-link" target="_blank">Coifa de parede Mini OM White Elica</a></td>
+                            <td class="status-private">private</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>16411</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/torre-dupla-tecno-de-60cm/" class="product-link" target="_blank">Conjunto Torre Quente Dupla Forno 73 Litros e Forno e Micro-ondas 25 Litros Tecno 220v</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>15638</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/misturador-monocomando-fosco-franke-smart-pull-out-extensor-flexivel/" class="product-link" target="_blank">Misturador Monocomando Fosco Franke Smart Pull Out Extensor Flexível</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14323</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/porta-sabonete-triangle-marmore-bege-bahia/" class="product-link" target="_blank">Porta Sabonete Triangle Mármore Bege Bahia</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14317</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/porta-sabonete-triangle-marmore-branco-carrarinha/" class="product-link" target="_blank">Porta Sabonete Triangle Mármore Branco Carrarinha</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14314</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/porta-sabonete-square-marmore-branco-moura-exotico/" class="product-link" target="_blank">Porta Sabonete Square Mármore Branco Moura Exótico</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14310</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/porta-sabonete-square-marmore-branco-carrarinha-2/" class="product-link" target="_blank">Porta Sabonete Square Mármore Branco Carrarinha</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14307</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/porta-sabonete-square-marmore-bianco-classico/" class="product-link" target="_blank">Porta Sabonete Square Mármore Bianco Clássico</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14282</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/porta-sabonete-square-marmore-bege-bahia/" class="product-link" target="_blank">Porta Sabonete Square Mármore Bege Bahia</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14267</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/difusor-aromatizador-de-ambientes-modelo-triangle-marmore-branco-cintilante/" class="product-link" target="_blank">Difusor / Aromatizador de Ambientes - Modelo Triangle - Mármore Branco Cintilante</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14263</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/difusor-aromatizador-de-ambientes-modelo-triangle-marmore-branco-carrarinha/" class="product-link" target="_blank">Difusor / Aromatizador de Ambientes - Modelo Triangle - Mármore Branco Carrarinha</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14260</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/difusor-aromatizador-de-ambientes-modelo-triangle-marmore-bege-bahia/" class="product-link" target="_blank">Difusor / Aromatizador de Ambientes - Modelo Triangle - Mármore Bege Bahia</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14248</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/difusor-aromatizador-de-ambientes-modelo-square-marmore-bege-bahia/" class="product-link" target="_blank">Difusor / Aromatizador de Ambientes - Modelo Square - Mármore Bege Bahia</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14254</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/difusor-aromatizador-de-ambientes-modelo-square-marmore-branco-carrarinha/" class="product-link" target="_blank">Difusor / Aromatizador de Ambientes - Modelo Square - Mármore Branco Carrarinha</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14251</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/difusor-aromatizador-de-ambientes-modelo-square-marmore-bianco-classico/" class="product-link" target="_blank">Difusor / Aromatizador de Ambientes - Modelo Square - Mármore Bianco Clássico</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14245</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/difusor-aromatizador-de-ambientes-modelo-slim-marmore-branco-moura-exotico/" class="product-link" target="_blank">Difusor / Aromatizador de Ambientes - Modelo Slim - Mármore Branco Moura Exótico</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14242</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/difusor-aromatizador-de-ambientes-modelo-slim-marmore-branco-carrarinha/" class="product-link" target="_blank">Difusor / Aromatizador de Ambientes - Modelo Slim - Mármore Branco Carrarinha</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14239</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/difusor-aromatizador-de-ambientes-modelo-slim-marmore-bege-bahia/" class="product-link" target="_blank">Difusor / Aromatizador de Ambientes - Modelo Slim - Mármore Bege Bahia</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14223</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/difusor-aromatizador-de-ambientes-modelo-slim-marmore-bianco-classico/" class="product-link" target="_blank">Difusor / Aromatizador de Ambientes - Modelo Slim - Mármore Bianco Clássico</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14208</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-de-semi-encaixe-quadrada-marmore-branco-carrarinha-2/" class="product-link" target="_blank">Cuba de Semi Encaixe Quadrada - Mármore Branco Carrarinha</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14213</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-de-semi-encaixe-quadrada-marmore-branco-carrarinha/" class="product-link" target="_blank">Cuba de Semi Encaixe Quadrada - Mármore Branco Carrarinha</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14168</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-de-semi-encaixe-oitavada-marmore-bege-bahia/" class="product-link" target="_blank">Cuba de Semi Encaixe Oitavada - Mármore Bege Bahia</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14155</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-de-semi-apoio-cilindrica-marmore-bege-bahia/" class="product-link" target="_blank">Cuba de Semi Apoio Cilíndrica - Mármore Bege Bahia</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14159</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-de-apoio-oitavada-marmore-bege-bahia/" class="product-link" target="_blank">Cuba de Apoio Oitavada - Mármore Bege Bahia</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>14083</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-de-semi-apoio-cilindrica-marmore-bianco-classico/" class="product-link" target="_blank">Cuba de Semi Apoio Cilíndrica - Mármore Bianco Clássico</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>13257</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/tanque-luxo-700-mekal/" class="product-link" target="_blank">Tanque Luxo 700 Mekal</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>12450</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/misturador-de-mesa-monocomando-franke-active-plus-c-extensor-flexivel/" class="product-link" target="_blank">Misturador De Mesa Monocomando Franke Active Plus c/ Extensor Flexível</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>12360</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/misturador-monocomando-brilho-franke-smart-pull-out-extensor-flexivel/" class="product-link" target="_blank">Misturador Monocomando Brilho Franke Smart Pull Out Extensor Flexível</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>12009</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/triturador-de-alimentos-franke-075hp/" class="product-link" target="_blank">Triturador de Alimentos Franke 0,75HP</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>9352</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/misturador_mesa_monocomando_fosco_franke_active_plus_extensor_flexivel/" class="product-link" target="_blank">Misturador Mesa Monocomando Fosco Franke Active Plus Extensor Flexível</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                        <tr>
+                            <td>4830</td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/canal-organizador-umido-debacco/" class="product-link" target="_blank">Canal Organizador Ášmido DeBacco</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Adicionar SKU</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-header">
+                <h2>💰 Produtos Sem Preço</h2>
+                <span class="badge">127 produtos</span>
+            </div>
+            <div class="section-content">
+                <p>Produtos sem preço não podem ser vendidos no e-commerce.</p>
+                <table class="problem-table">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Nome do Produto</th>
+                            <th>Status</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="sku-code">16702</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/coifa-de-ilha-linea-touch-franke-90cm/" class="product-link" target="_blank">Coifa de Ilha Linea Touch Franke 90cm</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">16700*</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/coifa-de-parede-linea-touch-franke-90cm/" class="product-link" target="_blank">Coifa de Parede Linea Touch Franke 90cm</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code"></span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-pianette-trio-mekal/" class="product-link" target="_blank">Cuba Pianette Trio Mekal</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">010379CF</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-mekal-lr-70-bronze-shades/" class="product-link" target="_blank">Cuba Mekal LR 70 Bronze Shades</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">010379CG</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-mekal-lr-70-titanio-shades/" class="product-link" target="_blank">Cuba Mekal LR 70 Titânio Shades</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">010355CG</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-mekal-lr-50-titanio-shades/" class="product-link" target="_blank">Cuba Mekal LR 50 Titânio  Shades</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code"></span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/monocomando-para-cozinha-docol-pronto-127v-01064306-2/" class="product-link" target="_blank">Monocomando para cozinha Docol Pronto 127v 01064306</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code"></span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/tanque-duplo-standard-1300-mekal/" class="product-link" target="_blank">Tanque Duplo Standard 1300 Mekal</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">17092</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/forno-eletrico-de-embutir-71l-franke-smart-fsm-86-220v/" class="product-link" target="_blank">Forno Elétrico de Embutir 71l Franke Smart Fsm 86 – 220V</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">16100</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cooktop-pure-white-franke-755-4g/" class="product-link" target="_blank">Cooktop Pure White Franke 755 4G</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">14638</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cooktop-a-gas-glass-franke-75x52-c-5-queimadores-2/" class="product-link" target="_blank">Cooktop a Gás Glass Franke 75x52 c/ 5 Queimadores</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">14638*</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cooktop-a-gas-glass-franke-75x52-c-5-queimadores/" class="product-link" target="_blank">Cooktop a Gás Glass Franke 75x52 c/ 5 Queimadores</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">17092 / 17100</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/conjunto-torre-quente-forno-eletrico-fsm86-71l-e-micro-ondas-combinado-de-embutir-maris-fsm45-40-litros-franke/" class="product-link" target="_blank">Conjunto Torre Quente Forno Elétrico FSM86 71L e Micro-ondas Combinado de Embutir Maris FSM45 40 Litros Franke</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">BOS6737E13XBR*</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/forno-eletrico-de-embutir-gorenje-bos6737e13x-220v-copia/" class="product-link" target="_blank">Forno Elétrico de Embutir Gorenje BOS6737E13X 220V (cópia)</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">ECFEP0702A</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/coifa-tau-parede-evol-copia/" class="product-link" target="_blank">Coifa Tau Parede Evol (cópia)</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">18548</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cooktop-de-inducao-com-coifa-integrada-extractor-maris-70cm-franke/" class="product-link" target="_blank">Cooktop de Indução com Coifa Integrada Extractor Maris 70cm FRANKE</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">BOS6747A01XBR*</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/forno-eletrico-de-embutir-com-air-fryer-220v-bsa6747a04xbrwi-gorenje-2/" class="product-link" target="_blank">Forno Elétrico de Embutir com Air Fryer 220V BSA6747A04XBRWI Gorenje</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">DUOTR44BXD</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/conjunto-de-refrigeradores-tr44bxda-tr44bxdb-bottom-freezer-de-embutir-totalizando-152-cm-para-890-l-portas-em-inox-220-v/" class="product-link" target="_blank">Conjunto de refrigeradores TR44BXDA + TR44BXDB bottom freezer de embutir totalizando 152 cm, para 890 l, portas em Inox, 220 V</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">17106</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cooktop-de-inducao-c-4-zonas-smart-654-display-touch-65x51-220v/" class="product-link" target="_blank">Cooktop de indução c/ 4 Zonas Smart 654 Display Touch 65x51 - 220V</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">17096</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/forno-eletrico-de-embutir-com-manipulos-retrateis-maris-fma-97-franke-71l/" class="product-link" target="_blank">Forno Elétrico de Embutir com Manípulos Retrateis Maris FMA 97 Franke 71L</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">960370</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cabide-mixmatch-grafite-escovado/" class="product-link" target="_blank">Cabide Mix&amp</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">Banheiro</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/acabamento-monocomando-para-chuveiro-3-4-alta-vazao-mixmatch-grafite-escovado/" class="product-link" target="_blank">Acabamento monocomando para chuveiro 3/4" alta vazão Mix&amp</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">18034</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/refrigerador-de-embutir-fcb-320-tnf-br-278l-franke/" class="product-link" target="_blank">Refrigerador de embutir FCB 320 TNF BR 250L Franke</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">18116</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/coifa-de-teto-e-purificador-de-ar-fcmy-air-hub-branco-120cm-franke/" class="product-link" target="_blank">Coifa de Teto e Purificador de Ar FCMY Air Hub Branco 120cm Franke</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">18118</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/coifa-de-ilha-mythos-fmy-t-shelf-180cm-franke/" class="product-link" target="_blank">Coifa de Ilha Mythos FMY T-SHELF 180cm Franke</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">17984</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cooktop-a-gas-inox-franke-5-queimadores-franke-2/" class="product-link" target="_blank">Cooktop a Gás Inox 51x88  5 Queimadores Franke</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">TR43AVDDV2 / TR43CVDAV2</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/conjunto-adega-cervejeira-tecno-vintage-beer-master-433-litros-de-embutir-inox-abertura-para-direita-tr43cvdav2/" class="product-link" target="_blank">Conjunto Adega Cervejeira tecno vintage beer master 433 litros de embutir inox - abertura para direita – TR43CVDAV</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">017051CH</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/tanque-reto-63x515x26-alto-brilho-35l-sobrepor-docol/" class="product-link" target="_blank">Tanque reto 63x51,5x26 alto brilho 35L sobrepor Docol</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code"></span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/conjunto-adega-45-garrafas-debacco-e-cervejeira-beer-center-85-litros-undercounter-de-embutir-2/" class="product-link" target="_blank">Conjunto Adega 45 Garrafas Debacco e Cervejeira Beer Center 85 Litros Undercounter de Embutir</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">17096, 17102</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/conjunto-torre-quente-forno-eletrico-maris-fma97-71l-e-micro-ondas-fma45-40l-franke/" class="product-link" target="_blank">Conjunto Torre Quente Forno Elétrico Maris FMA97 71L e Micro-ondas FMA45 40L Franke</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">17094, 17100</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/conjunto-torre-quente-forno-eletrico-de-embutir-maris-fsm97-71l-e-micro-ondas-maris-fsm45-40l-franke/" class="product-link" target="_blank">Conjunto Torre Quente Forno Elétrico de Embutir Maris FSM97 71L e Micro-ondas Maris FSM45 40L Franke</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">17092, 17098</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/torre-quente-forno-eletrico-fsm86-e-micro-ondas-fsm25-franke/" class="product-link" target="_blank">Conjunto Torre Quente Forno Elétrico FSM86 71L e Micro-ondas FSM25 25L Franke</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">84818019</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/misturador-monocomando-icon-aco-polido-fosco-franke/" class="product-link" target="_blank">Misturador Monocomando Icon Aço Polido Fosco Franke</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">TR14AVDB / TR14CVDD</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/conjunto-adega-43-garrafas-dual-zone-e-beer-center-gourmet-136-litros-professional-tecno/" class="product-link" target="_blank">Conjunto Adega 43 Garrafas Dual Zone e Beer Center Gourmet 136 Litros Professional Tecno</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">15121</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-de-sobrepor-bell-franke-545x415-c-acessorios-e-valvula-45/" class="product-link" target="_blank">Cuba De Sobrepor Bell 54,5x41,5 c/ Acessórios e Válvula 4,5 Franke</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">ADG46D</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/adega-de-embutir-crissair-dual-zone-46-garrafas-129-litros-inox-60cm-adg-46d/" class="product-link" target="_blank">Adega de Embutir Crissair Dual Zone 46 Garrafas 129 Litros Inox 60cm ADG 46D</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">17098-17986-17092-16655</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/quarteto-fantastico-franke-combo-promocional-completo/" class="product-link" target="_blank">Quarteto Fantastico FRANKE - Combo Promocional Completo</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">071943 + 35891</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/conjunto-beer-center-135-litros-cbc-135-e-adega-46-garrafas-adg-46d-crissair/" class="product-link" target="_blank">Conjunto Beer Center 135 Litros CBC 135 e Adega 46 Garrafas ADG 46D Crissair</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">JC-145B220L</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/conjunto-beer-center-135-litros-e-adega-wine-center-46-garrafas-smart-evol/" class="product-link" target="_blank">Conjunto Beer Center 135 Litros e Adega Wine Center 46 Garrafas Smart Evol</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">960406</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/papeleira-mixmatch-cromado/" class="product-link" target="_blank">Papeleira Mix&amp</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">916406</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/misturador-de-cozinha-para-mesa-com-ducha-retratil-grafite-escovado-docol-2/" class="product-link" target="_blank">Bica para banheiro 305 Mix&amp</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">71832+71532</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/conjunto-torre-quente-forno-e-grill-72-litros-song-e-micro-ondas-33-litros-drean-crissair-de-embutir/" class="product-link" target="_blank">Conjunto Torre Quente Forno e Grill 72 litros Song e  Micro-ondas 33 Litros Drean Crissair de Embutir</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">POR-WK01</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/bartender-smart-chopeira-white-ceramic-cheffer/" class="product-link" target="_blank">Bartender &amp</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">POR-BK01</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/bartender-smart-chopeira-black-ceramic/" class="product-link" target="_blank">Bartender Smart Chopeira Black Ceramic</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">35941*</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/?post_type=product&p=20425" class="product-link" target="_blank">Coifa Crissair Ilha  NI 46 G3 Ilha Inox 90cm</a></td>
+                            <td class="status-draft">draft</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">LouÃƒÂ§as e Metais AcessÃƒÂ³rios</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/18595/" class="product-link" target="_blank">Acabamento para registro DocolBase 3/4" Mix&amp</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">17669</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/18517/" class="product-link" target="_blank">Cafeteira de Embutir Franke FMY 45CM</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">17466</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/cuba-mythos-bowl-myx-210-70-c-acessorios-franke/" class="product-link" target="_blank">Cuba Mythos Bowl MYX 210-70 c/ Acessórios Franke</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">18099</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/misturador-monocomando-de-mesa-leda-neo-fosco-em-aco-inox-304-com-bica-em-j-alta-extensivel-franke/" class="product-link" target="_blank">Misturador Monocomando de mesa Leda Neo fosco em aço inox 304 com bica em J alta extensível Franke</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                        <tr>
+                            <td><span class="sku-code">PRO126G2EBIT*</span></td>
+                            <td><a href="https://www.uniqueroom.com.br/produto/fogao-professional1195cm-6-queimadores-2-fornos-branco-bertazzoni/" class="product-link" target="_blank">Fogão PROFESSIONAL,119,5cm, 6 queimadores 2 Fornos Branco Bertazzoni</a></td>
+                            <td class="status-publish">publish</td>
+                            <td>Definir preço</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-header">
+                <h2>📈 Próximos Passos</h2>
+            </div>
+            <div class="section-content">
+                <h3>Prioridades para limpeza:</h3>
+                <ol>
+                    <li><strong>Resolver SKUs duplicados:</strong> 27 conflitos identificados</li>
+                    <li><strong>Adicionar SKUs faltantes:</strong> 50 produtos sem identificação</li>
+                    <li><strong>Definir preços:</strong> 127 produtos sem precificação</li>
+                    <li><strong>Revisar status:</strong> 19 produtos em rascunho</li>
+                </ol>
+                
+                <h3>Após limpeza:</h3>
+                <ul>
+                    <li>Sincronizar com database de 16.622 SKUs</li>
+                    <li>Implementar controle automático de duplicados</li>
+                    <li>Configurar cron de monitoramento diário</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div style="text-align: center; padding: 30px; color: #666;">
+            <p>Relatório gerado automaticamente pelo Pipeline Sync Unique Room</p>
+            <p>Tempo de análise: 0:02:33.735142</p>
+        </div>
+    </div>
+</body>
+</html>
