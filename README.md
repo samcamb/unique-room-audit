@@ -10,13 +10,21 @@
 - **127 produtos sem preço** (10%)
 - **19 produtos em rascunho** (1.5%)
 
-## 🌐 Visualizar Relatório HTML
+## 📄 DOWNLOAD PDF (RECOMENDADO)
 
-### Opção 1 - Raw HTML (recomendado):
-[🔗 **ABRIR RELATÓRIO COMPLETO**](https://raw.githubusercontent.com/samcamb/unique-room-audit/main/index.html)
+### 🔗 **[BAIXAR RELATÓRIO EM PDF](https://github.com/samcamb/unique-room-audit/raw/main/unique-room-audit-report.pdf)**
 
-### Opção 2 - Salvar e abrir localmente:
-1. Clique com botão direito no link acima
+*Clique no link acima para download direto do PDF (7 KB)*
+
+---
+
+## 🌐 Outras Opções (se PDF não funcionar)
+
+### Opção 1 - HTML Raw:
+[🔗 **Ver Relatório HTML**](https://raw.githubusercontent.com/samcamb/unique-room-audit/main/index.html)
+
+### Opção 2 - Salvar localmente:
+1. Clique com botão direito no link HTML acima
 2. "Salvar link como..." 
 3. Salve como `relatorio.html`
 4. Abra no navegador
@@ -28,6 +36,11 @@
 2. **Adicionar SKUs faltantes:** 50 produtos sem identificação  
 3. **Definir preços:** 127 produtos sem precificação
 4. **Revisar status:** 19 produtos em rascunho
+
+### SKUs Duplicados Mais Críticos:
+- **`15813`** → **3 produtos** (Franke triturador + Premium/Evolution)
+- **`969866`** → **3 produtos** (Bacia Docol Stillo repetida) 
+- **`RF-FD-653-XX-2VSA`** → **2 produtos** (Geladeira Elettromec duplicada)
 
 ### Após limpeza:
 - Sincronizar com database de 16.622 SKUs
